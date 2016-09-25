@@ -21,6 +21,8 @@
 #   Stanford University (Anna Ogorzalek et al.).                                         #
 #   Modified for PHY 517 / AST 443 at Stony Brook University by Drew Jamieson and        #
 #   Anja von der Linden                                                                  #
+#   Modified for specific lab group in AST 443 at Stony Brook University by Yogesh Mehta # 
+#   and Joseph Monroy                                                                    #
 #                                                                                        #
 ##########################################################################################
 
