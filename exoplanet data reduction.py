@@ -47,10 +47,10 @@ def AverageDark(darkfiles):
 
     # opens each dark image file and stores the 2d images in a numpy array
     darkdata=np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(darkfiles)])
-    
-    ### !!! TODO FINISH THIS FUNCTION !!!
-    
-    masterdark=        # What goes in here? np.mean(darkdata, axis=0) or np.median(darkdata, axis=0)?
+     for i in range(0,darkdata.shape[0]):
+        darkdata[i]=darkdata[i]/np.median(darkdata[i])
+    masterdark=np.median(darkdata,axis=0)
+    masterdark = masterdark/np.mean(masterdark)
     return masterdark
 
 
