@@ -48,9 +48,9 @@ def AverageDark(darkfiles):
     # opens each dark image file and stores the 2d images in a numpy array
     darkdata=np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(darkfiles)])
     
-    ### !!! TODO FINISH THIS FUNCTION !!!
+    # make the master dark file (uses median)
+    masterdark = np.median(flatdata, axis = 0)
     
-    masterdark=        # What goes in here? np.mean(darkdata, axis=0) or np.median(darkdata, axis=0)?
     return masterdark
 
 
@@ -70,10 +70,8 @@ def AverageFlat(flatfiles):
 def ScienceExposure(rawscidata,masterdark,masterflat):
     
     rawimage=rawscidata.data #Gets the data from the header of the science image file
-    
-        ### !!! TODO FINISH THIS FUNCTION !!!
-    
-    scienceimage= # How should you combine the rawimage data with the masterdark and masterflat data?
+   
+    scienceimage= (rawimage - masterdark)/masterflat 
     return scienceimage
 
 # This is the end of the functions. The main body of the code begins below.
@@ -110,8 +108,7 @@ newflat=basename+'_Master_Flat.fits'
 darkhdu=pyfits.PrimaryHDU(finaldark)
 darkhdu.writeto(newdark, clobber=True)
 
-# Given the names and conventions, how do we write our final flat field image to the disk?
-
-
+flathdu = pyfits.PrimaryHDU(finalflat)
+darkhdu.writeto(newflat, clobber = True)
 
 ###################################### End of Program ##########################################
