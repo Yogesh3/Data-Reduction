@@ -42,6 +42,25 @@ import sys,os
 # Python is an interpreted programming language, so we have to put all of our functions BEFORE
 # the main body of the code!
 
+#This function creates 
+def PixelMask(longfiles, shortfiles):
+    #Open the long exposure files and store in 2D numpy array
+    longflats = np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(longfiles)])
+    #Open the short exposure files and store in 2D numpy array
+    shortflats = np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(shortfiles)])
+    
+    #Normalize each long exposure file and combine 
+    for i in range(0,longflats.shape[0]):
+        longflats[i]=longflats[i]/np.median(longflats[i])
+    masterlong=np.median(longflats,axis=0) # Median combines long flat images
+    
+    #Normalize each short exposure file and combine 
+    for i in range(0,shortflats.shape[0]):
+        shortflats[i]=shortflats[i]/np.median(shortflats[i])
+    mastershort=np.median(mastershort,axis=0) # Median combines short flat images
+    
+    pixelmask = masterlong/mastershort
+
 # This function does the combining of dark currents
 def AverageDark(darkfiles):
 
@@ -80,13 +99,16 @@ def ScienceExposure(rawscidata,masterdark,masterflat):
 # Make sure you run with all arguments provided or you will run into errors!
 
 darkfilelist=sys.argv[1]    # First argument is a text file that lists the names of all dark current image file names
-flatfilelist=sys.argv[2]    # Second argument is a text file that lists the names of all of the flat field images
-sciencefilelist=sys.argv[3] # Third argument is a text file that lists the names of all the science images
-basename=sys.argv[4]        # All of the output files will start with the string value of basename. 
+longflatfilelist=sys.argv[2]    # Second argument is a text file that lists the names of all of the long exposure flat field images
+shortflatfilelist = sys.argv[3] # Third argument is a text file that lists the names of all of the short exposure flat field images
+sciencefilelist=sys.argv[4] # Fourth argument is a text file that lists the names of all the science images
+basename=sys.argv[5]        # All of the output files will start with the string value of basename. 
 
 finaldark=AverageDark(darkfilelist) # Find function aboved
 
-finalflat=AverageFlat(flatfilelist) # Find function aboved
+finalflat=AverageFlat(longflatfilelist) # Find function aboved
+
+pixelmask = PixelMask(longflatfilelist, shortflatfilelist)
 
 for sciencefile in open(sciencefilelist): # Loops though all science files to apply finaldark and finalflat corrections
 
