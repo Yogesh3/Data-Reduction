@@ -48,22 +48,18 @@ import pdb
 
 #This function maps the bad pixels
 def PixelMask(longfiles, shortfiles):
-    #Open the long exposure files and store in 2D numpy array
+    #Open the long exposure files and store in 2D numpy array containing doubles
     longflats = np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(longfiles)])
-    #Open the short exposure files and store in 2D numpy array
+    longflats = longflats.astype(float)
+
+    #Open the short exposure files and store in 2D numpy array containing doubles
     shortflats = np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(shortfiles)])
-    
-    #Normalize each long exposure file and combine 
-    for i in range(0,longflats.shape[0]):
-        longflats[i]=longflats[i]/np.median(longflats[i])
+    shortflats = shortflats.astype(float)
+
     masterlong=np.median(longflats,axis=0) # Median combines long flat images
-    
-    #Normalize each short exposure file and combine 
-    for i in range(0,shortflats.shape[0]):
-        shortflats[i]=shortflats[i]/np.median(shortflats[i])
     mastershort=np.median(shortflats,axis=0) # Median combines short flat images
     
-    pixelimage = masterlong/mastershort
+    pixelimage = masterlong/mastershort #These pixels should all be 3 (ratio of our exposure times)
     
     return pixelimage
 
@@ -72,21 +68,23 @@ def AverageDark(darkfiles):
 
     # opens each dark image file and stores the 2d images in a numpy array
     darkdata=np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(darkfiles)])
- #   pdb.set_trace()
+    
     # make the master dark file (uses median)
     masterdark = np.median(darkdata, axis = 0)
-  #  pdb.set_trace()
+  
     return masterdark
     
 
 # This function creates a combined flat field image
 def AverageFlat(flatfiles):
-    
+     
     # opens each flat image file and stores the 2d images in a numpy array
     flatdata=np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(flatfiles)])
+    flatdata = flatdata.astype(float)
+    
     # normalizes each image by its median (useful especially if the flats have very different count level):
     for i in range(0,flatdata.shape[0]):
-        flatdata[i]=flatdata[i]/np.median(flatdata[i])
+        flatdata[i] = flatdata[i]/np.median(flatdata[i])
     masterflat=np.median(flatdata,axis=0) # Median combines flat images
     masterflat = masterflat/np.mean(masterflat) # Normalizes to the mean of the flats
     return masterflat
@@ -96,7 +94,8 @@ def AverageFlat(flatfiles):
 def ScienceExposure(rawscidata,masterdark,masterflat):
     
     rawimage=rawscidata.data #Gets the data from the header of the science image file
-   
+    rawimage = rawimage.astype(float)
+    
     scienceimage= (rawimage - masterdark)/masterflat   #creates final science image
     
     return scienceimage
@@ -106,8 +105,6 @@ def ScienceExposure(rawscidata,masterdark,masterflat):
 
 # Each of these is an argument that needs to be on the calling of the script. 
 # Make sure you run with all arguments provided or you will run into errors!
-
-#pdb.set_trace()
 
 darkfilelist=sys.argv[1]    # First argument is a text file that lists the names of all dark current image file names
 longflatfilelist=sys.argv[2]    # Second argument is a text file that lists the names of all of the long exposure flat field images
@@ -120,7 +117,7 @@ finaldark=AverageDark(darkfilelist) # Find function aboved
 finalflat=AverageFlat(longflatfilelist) # Find function aboved
 
 #finalpixel = PixelMask(longflatfilelist, shortflatfilelist)
-#pdb.set_trace()
+
 for sciencefile in open(sciencefilelist): # Loops though all science files to apply finaldark and finalflat corrections
 
     sciencefile = sciencefile.rstrip(' \n')
@@ -134,7 +131,6 @@ for sciencefile in open(sciencefilelist): # Loops though all science files to ap
                                                                # data block (finalimage) and a header (sciheader)
     sciencehdu.writeto(newscience, clobber=True) # This writes the fits object to the file name newscience, which is 
                                                  # defined above The clobber means to overwrite the file if it already exists.
-    rawdata.close()
     
 newdark=basename+'_Master_Dark.fits'
 newflat=basename+'_Master_Flat.fits'
@@ -146,6 +142,6 @@ darkhdu.writeto(newdark, clobber=True)
 flathdu = pyfits.PrimaryHDU(finalflat)
 flathdu.writeto(newflat, clobber = True)
 
-#pixelhdu = pyfits.PrimaryHDU(finalpixel)
-#pixelhdu.writeto(newpixel, clobber = True)
+pixelhdu = pyfits.PrimaryHDU(finalpixel)
+pixelhdu.writeto(newpixel, clobber = True)
 ###################################### End of Program ##########################################
