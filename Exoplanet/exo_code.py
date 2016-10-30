@@ -41,6 +41,7 @@
 import pyfits
 import numpy as np
 import sys,os
+import pdb
 
 # Python is an interpreted programming language, so we have to put all of our functions BEFORE
 # the main body of the code!
@@ -71,10 +72,10 @@ def AverageDark(darkfiles):
 
     # opens each dark image file and stores the 2d images in a numpy array
     darkdata=np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(darkfiles)])
-    
+ #   pdb.set_trace()
     # make the master dark file (uses median)
     masterdark = np.median(darkdata, axis = 0)
-    
+  #  pdb.set_trace()
     return masterdark
     
 
@@ -106,6 +107,8 @@ def ScienceExposure(rawscidata,masterdark,masterflat):
 # Each of these is an argument that needs to be on the calling of the script. 
 # Make sure you run with all arguments provided or you will run into errors!
 
+#pdb.set_trace()
+
 darkfilelist=sys.argv[1]    # First argument is a text file that lists the names of all dark current image file names
 longflatfilelist=sys.argv[2]    # Second argument is a text file that lists the names of all of the long exposure flat field images
 shortflatfilelist = sys.argv[3] # Third argument is a text file that lists the names of all of the short exposure flat field images
@@ -116,11 +119,11 @@ finaldark=AverageDark(darkfilelist) # Find function aboved
 
 finalflat=AverageFlat(longflatfilelist) # Find function aboved
 
-finalpixel = PixelMask(longflatfilelist, shortflatfilelist)
-
+#finalpixel = PixelMask(longflatfilelist, shortflatfilelist)
+#pdb.set_trace()
 for sciencefile in open(sciencefilelist): # Loops though all science files to apply finaldark and finalflat corrections
 
-    sciencefile = sciencefile.rstrip('\n')
+    sciencefile = sciencefile.rstrip(' \n')
     
     rawdata=pyfits.open(sciencefile+'.FIT')[0] # This gets the 1st extension (starts with 0!), this is an example of 
                                         # using pyfits.open, this is a FITS file object
@@ -143,6 +146,6 @@ darkhdu.writeto(newdark, clobber=True)
 flathdu = pyfits.PrimaryHDU(finalflat)
 flathdu.writeto(newflat, clobber = True)
 
-pixelhdu = pyfits.PrimaryHDU(finalpixel)
-pixelhdu.writeto(newpixel, clobber = True)
+#pixelhdu = pyfits.PrimaryHDU(finalpixel)
+#pixelhdu.writeto(newpixel, clobber = True)
 ###################################### End of Program ##########################################
