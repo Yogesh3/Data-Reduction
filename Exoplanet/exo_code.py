@@ -14,7 +14,7 @@
 #   3) AverageFlat(flatfiles,masterdark) which creats and returns the master dark        #
 #      subtracted flat image                                                             #
 #   4) ScienceExposure(rawscidata,masterdark,masterflat), which applied the master       #
-#      dark and flat images to a raw science image                                       #
+#      dark and flat images to a raw science image. Also gets rid of bad pixels          #
 #                                                                                        #
 #   Below these functions is the main body of the program, which applies the master      #
 #   dark and master flat to all of the science images and writes that clean science      #
@@ -46,22 +46,32 @@ import pdb
 # Python is an interpreted programming language, so we have to put all of our functions BEFORE
 # the main body of the code!
 
-#This function maps the bad pixels
+#This function finds the bad pixels
 def PixelMask(longfiles, shortfiles):
     #Open the long exposure files and store in 2D numpy array containing doubles
     longflats = np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(longfiles)])
-    longflats = longflats.astype(float)
+    longflats = longflats.astype(np.float64)
 
     #Open the short exposure files and store in 2D numpy array containing doubles
     shortflats = np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(shortfiles)])
-    shortflats = shortflats.astype(float)
+    shortflats = shortflats.astype(np.float64)
 
     masterlong=np.median(longflats,axis=0) # Median combines long flat images
     mastershort=np.median(shortflats,axis=0) # Median combines short flat images
     
-    pixelimage = masterlong/mastershort #These pixels should all be 3 (ratio of our exposure times)
+    image = masterlong/mastershort #These pixels should all be 3 (ratio of our exposure times)
     
-    return pixelimage
+    badpixels = np.array(np.where(image < 2.8))#Upon inspecting the image with ds9, we determined 
+                                               #that any pixel with a value less than 2.8 was a bad pixel
+
+    #Making our bad pixel mask
+    mask = np.ones(image.shape, dtype = np.float64)
+    for i in range(0, badpixels.shape[1]):
+        y = badpixels[0,i]
+        x = badpixels[1,i]
+        mask[y,x] = 0.0
+
+    return mask
 
 # This function does the combining of dark currents
 def AverageDark(darkfiles):
@@ -80,7 +90,7 @@ def AverageFlat(flatfiles):
      
     # opens each flat image file and stores the 2d images in a numpy array
     flatdata=np.array([pyfits.open(i.rstrip('\n'))[0].data for i in open(flatfiles)])
-    flatdata = flatdata.astype(float)
+    flatdata = flatdata.astype(np.float64)
     
     # normalizes each image by its median (useful especially if the flats have very different count level):
     for i in range(0,flatdata.shape[0]):
@@ -91,12 +101,12 @@ def AverageFlat(flatfiles):
 
 
 # This function creates the processed science image after combined dark, and flat images have been created.  
-def ScienceExposure(rawscidata,masterdark,masterflat):
+def ScienceExposure(rawscidata,masterdark,masterflat,badpixel):
     
-    rawimage=rawscidata.data #Gets the data from the header of the science image file
-    rawimage = rawimage.astype(float)
+    rawimage = np.array([rawscidata.data]) #Gets the data from the header of the science image file
+    rawimage = rawimage.astype(np.float64)
     
-    scienceimage= (rawimage - masterdark)/masterflat   #creates final science image
+    scienceimage= badpixel*((rawimage - masterdark)/masterflat)   #creates final science image
     
     return scienceimage
 
@@ -116,7 +126,7 @@ finaldark=AverageDark(darkfilelist) # Find function aboved
 
 finalflat=AverageFlat(longflatfilelist) # Find function aboved
 
-#finalpixel = PixelMask(longflatfilelist, shortflatfilelist)
+pixelmask = PixelMask(longflatfilelist, shortflatfilelist)
 
 for sciencefile in open(sciencefilelist): # Loops though all science files to apply finaldark and finalflat corrections
 
@@ -124,7 +134,7 @@ for sciencefile in open(sciencefilelist): # Loops though all science files to ap
     
     rawdata=pyfits.open(sciencefile+'.FIT')[0] # This gets the 1st extension (starts with 0!), this is an example of 
                                         # using pyfits.open, this is a FITS file object
-    finalimage=ScienceExposure(rawdata,finaldark,finalflat) # Find function above
+    finalimage=ScienceExposure(rawdata,finaldark,finalflat,pixelmask) # Find function above
     sciheader=rawdata.header # This grabs the header object from the FITS object rawdata
     newscience=basename+'_'+sciencefile+'_clean.fits'  # Appending filenames onto the base
     sciencehdu=pyfits.PrimaryHDU(finalimage,header=sciheader)  # This converts a numpy array into a FITS object with a 
@@ -142,6 +152,4 @@ darkhdu.writeto(newdark, clobber=True)
 flathdu = pyfits.PrimaryHDU(finalflat)
 flathdu.writeto(newflat, clobber = True)
 
-pixelhdu = pyfits.PrimaryHDU(finalpixel)
-pixelhdu.writeto(newpixel, clobber = True)
 ###################################### End of Program ##########################################
