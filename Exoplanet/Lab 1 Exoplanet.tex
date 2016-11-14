@@ -13,7 +13,7 @@
 %Title
 \title{Lab 1: Exoplanet Transit}
 \author{Authors: Joseph Monroy and Yogesh Mehta \\ AST 443: Observational Techniques in Astronomy}
-\date{Performed on October 14-15, 2016 \linebreak \linebreak Submitted on \today}
+\date{Performed on October 7-8, 2016 \linebreak \linebreak Submitted on \today}
 \maketitle
 \section*{Abstract}
 Our goal for this experiment was to successfully detect a Jupiter-type exoplanet, and from this to see whether it has the known mid-transit time and transit duration. Also, from the depth of the transit we want to get the ratio between the radii of the planet and the star. In our experiment we choose to view the star HD 209458 while its planet HD 209458b, also known as Osiris, was transiting. 
@@ -25,9 +25,15 @@ This is the method we used in our experiment and it has proven very successful o
 
 \newpage
 \section{Observations} 
-wkjlkjfsdkljf
+We decided to observe HD 209458 because of the unique characteristics of the system. The star is of G type making it very similar to our own star, having a mass of 1.148 solar masses and a radius of 1.203 solar radii. The planet has a radius 1.38 times that of Jupiter, while orbiting and nearly one eighth the orbital radius of Mercury to the Sun. This makes Osiris a hot Jupiter type planet because its the size of Jupiter but extremely close to it's star. This type of system is a great candidate for exoplanet detection through transit photometry. This is because the star is of average size, while having a huge Jupiter size planet orbiting it. This makes detecting a dip in the relative flux when the planet transits a lot easier. The only negative about this system is the orbital radius of Osiris, because the closer a planet is to its star the harder it will be to detect it. Although it makes up for it by the size of Osiris and the relatively bright star of 7.65 apparent magnitute.
 
+We were able to observe HD 209458 and its transiting planet by using a 14-inch Meade LX200-ACF telescope with a SBIG STL-1001E CCD camera attached. This yields a field of view of 26 arcminutes for the exposures. All observations were held at the Mt. Stony Brook Observatory. The weather that night was mostly clear with some thin overcast clouds in the beginning of observations. By the end of the experiment the sky was clear of clouds. The seeing was mostly good throughout the night as well with there being very little wind. We calculated the total transit duration to be 3.54 hours, with a mid-transit time of October $8^{\text{th}}$, 2016 at 02:23:23 UTC. The transit duration was calculated using the following equation:
+\begin{equation}
+	T_{duration} = \frac{P}{\pi}\arcsin\left(\frac{\sqrt{(R_*+R_P)^{2}-(bR_*)^{2}}}{a}\right)
+\end{equation}
+Where $P$, $a$ and $b$ are all the period, semi-major axis and impact parameter of the planet respectively, and $R_*$ and $R_P$ are the radii of the star and planet respectively. The mid-transit time was calculated from knowing the period of the planet, and knowing a specific time when the transit began in the past. From this information we simply just have to keep adding the period time to the time of transit until we reach current day.
 
+ We first tried to find the star by going to it's right accession and declination, and made sure that the star we found was HD 209458 by looking at our finder charts. Once we confirmed the star we made sure it was centered on the cross hairs of the eyepiece. We then made sure the CCD camera was connected correctly to the telescope and the program CCDSoft, which is used for adjusting the exposure times and other settings of the CCD. We first tried to take four exposures of our star with an exposure time (exp. time) of three seconds each. This resulted in counts that were too high because the star was focused too well on the CCDSoft. High counts are bad because the pixels on the CCD can be oversaturated at around 60,000 coutnts and not yield good data. So for the next exposure we defocused the star, while increasing the exposure time to five seconds, which resulted in lower counts around 20,000. We kept this exposure time for the rest of the science exposures
 
 
 
