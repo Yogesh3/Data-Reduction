@@ -120,7 +120,7 @@ The data we obtained from all the exposures were in the form of raw .FIT files. 
 
 We finally now have the three properties we need to get our analyzed data: the time of each image, flux received from all the stars in one image, and the error in that flux. Next we choose ten reference stars in of our clean images and took their respective times, flux, and the error in the flux from the table. We did this because it allows us to calibrate the flux received from the target star. All of these stars have similar brightness when we viewed them in ds9. From the fluxes of each reference star we rescaled them to by the star's average flux over all exposures taken. This was done also to the error in the flux, shown here:
 \begin{equation}
-f_{j}(t)  = \frac{f_{j}(t)}{\langle f_{j} \rangle}       \;\;\;\;\;\;\;\sigma_{f_{j}(t)} = \frac{\sigma_{f_{j}(t)}}{\langle f_{j} \rangle}
+f_{j}(t)  \rightarrow \frac{f_{j}(t)}{\langle f_{j} \rangle}       \;\;\;\;\;\;\;\sigma_{f_{j}(t)} \rightarrow \frac{\sigma_{f_{j}(t)}}{\langle f_{j} \rangle}
 \end{equation}
 Where $f_{j}(t)$ is the flux for some reference $j$ at time $t$ and $\sigma_{f_{j}(t)}$ is the error in that particular flux. We normalized the flux and its error because it would allow us to visualize any changes in airmass or atmospheric turbulence during the observation. Once we had these values calculated from the equation (2) we plotted each the flux as a function of time. The light curves for all ten reference stars are shown below:
 
@@ -138,12 +138,19 @@ Where $\mu_{i}^{ref}$ is the weighted mean for any image $i$. This weighted mean
 \begin{equation}
 	\sigma_{i}^{ref} = \sqrt{\frac{1}{\sum_{j}\left( \frac{1}{\left( \sigma_{j}^{ref}\right) ^{2}}\right)}}
 \end{equation}
+Now that we have the weighted mean of the reference stars, we can get rid of the atmospheric changes in the science images by getting the ratio: $r_{i} = \frac{f_{i}^{sci}}{\mu_{i}^{ref}}$. The error in this ratio is given by:
+\begin{equation}
+	\sigma_{r_{i}} = r_{i}^{2} \sqrt{\left( \frac{\sigma_{f_{i}^{sci}}}{f_{i}^{sci}}\right) ^{2} + \left( \frac{\sigma_{i}^{ref}}{\mu_{i}^{ref}}\right) ^{2}}
+\end{equation}
+We now have all the information needed: the time, science flux, weighted mean and the ratio of the two latter. The last step involves normalizing the ratio by the baseline flux of our target star (the flux when the plane is not transiting). The baseline flux was calculated by looking at the clean images taken before and after the transiting occurred, and taking the average flux of those images. The new ratio and its error will then be:
+\begin{equation}
+	r_{i} \rightarrow \frac{r_{i}}{f_{blf}} \;\;\;\;\;\;\;\;\;\;\; \sigma_{r_{i}} \rightarrow \frac{\sigma_{r_{i}}}{f_{blf}}
+\end{equation}
 
 \section{Data Analysis and Results (YM)}
 \section{Discussion}
 \section{Conclusion}
 \begin{thebibliography}{9}
-	
 \end{thebibliography}
 
 \appendix
