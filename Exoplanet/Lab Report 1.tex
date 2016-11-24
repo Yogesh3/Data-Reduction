@@ -1,13 +1,13 @@
 \documentclass{aastex61}
 %Packages
 \usepackage{graphicx}
-\usepackage{soul,listings, xcolor}
+\usepackage{soul, listings, xcolor}
+\usepackage{amsmath}
 %Code environment details
 \definecolor{dkgreen}{rgb}{0,0.6,0}
 \definecolor{gray}{rgb}{0.5,0.5,0.5}
 \definecolor{mauve}{rgb}{0.58,0,0.82}
 \definecolor{grey}{gray}{0.95}
-
 \lstset{frame=tb,
 	escapeinside={(*@}{@*)},
 	frame = single,
@@ -23,7 +23,6 @@
 	stringstyle=\color{mauve},
 	breaklines=true,
 	breakatwhitespace=true,
-	%tabsize=3
 }
 
 %% The default is a single spaced, 10 point font, single spaced article.
@@ -116,48 +115,133 @@ We first tried to find the star by going to it's right accession and declination
 
 
 \section{Data Reduction (JM and YM)}
-The data we obtained from all the exposures were in the form of raw .FIT files. So in order to make the science .FIT files usable we needed to create a Master Flat field, a Master Dark field and a bad pixel mask from all the calibration data. This was done using the Python code from \ref{code: reduction}, which created clean, calibrated science images. All of data reduction was done through the uhura astronomy computer using a secure shell client. When we performed the experiment the auto-guider on the telescope did not work, so we had to use the astronmetry.net software to get the position and coordinates of all the stars in our .FIT files. We wrote script called (insert here) to let the software run through all of our images. Next, we used the program Source Extractor to return the properties of all the stars in our images, most importantly the relative flux. However, we needed to know the aperture size Source extractor should use to get the data from the stars. This could be found out by opening up one of our clean images in ds9 and seeing what the radius in pixels is our target star. Once we found this radius, we inputed it into the Source Extractor configuration file and obtained the properties of every object in all of our images. We once again wrote a script called (insert here) that runs Source Extractor through all our images.
+The data we obtained from all the exposures were in the form of raw .FIT files. So in order to make the science .FIT files usable we needed to create a Master Flat field, a Master Dark field and a bad pixel mask from all the calibration data. The master dark image was used to correct for the dark current and the master flat field was used to scale each pixel by its sensitivity relative to the other pixels on the CCD. The bad pixel mask found any pixels with a response that was nonlinear in time. If the pixels are linear, the ratio of the counts from the long exposure flats to those of the short exposures should equal the ratio of the time of the long exposure to that of the short. Any pixel that deviated from this was deemed "bad." The ratio of the times is 3. This was all done using the Python code from appendix \ref{code: reduction}, which created clean science images. We found two bad pixels. Ordinarily, we would have taken an average of the surrounding pixels to extrapolate what the each bad pixel should have given us. However, since these pixels were in areas of the field that were never used, we simply ignored any information from them. All of the data reduction was done through the uhura astronomy computer using a secure shell client. 
 
-We finally now have the three properties we need to get our analyzed data: the time of each image, flux received from all the stars in one image, and the error in that flux. Next we choose ten reference stars in of our clean images and took their respective times, flux, and the error in the flux from the table. We did this because it allows us to calibrate the flux received from the target star. All of these stars have similar brightness when we viewed them in ds9. From the fluxes of each reference star we rescaled them to by the star's average flux over all exposures taken. This was done also to the error in the flux, shown here:
-\begin{equation}
+When we performed the experiment, the auto-guider on the telescope did not work, so we had to use the astronometry.net software to get the position and coordinates of all the stars in our .FIT files. We wrote a script to let the software run through all of our images. Next, we used the program Source Extractor to return the properties of all the stars in our images, most importantly the relative flux. However, we needed to know the aperture size Source Extractor should use to get the data from the stars. This could be found out by opening up one of our clean images in ds9 and seeing what the radius in pixels is of our target star. Although this aperture is larger than what we would like to maximize the signal to noise ratio, the larger size reduces the effects of seeing. Once we found this radius, we inputed it into the Source Extractor configuration file and obtained the properties of every object in all of our images. We once again wrote a script that runs all our images through Source Extractor. All of the code for this part can be found in appendix \ref{code: astro sex}.
+
+We finally now had the three properties we need to get our analyzed data: the time of each image, flux received from all the stars in one image, and the error in that flux. Next, we chose ten reference stars in our clean images and took their respective times, flux, and the error in the flux from the table. We did this because it allows us to calibrate the flux received from the target star, correcting for changes in the atmosphere, seeing, and airmass. All of these stars have similar brightness when we viewed them in ds9. We used the code from appendix \ref{code: flux} to find our stars in each image and get their fluxes and errors in each exposure. 
+
+Unfortunately, our code would sometimes match to the wrong star in an exposure, resulting in an outlier in our lightcurves. This would not happen for any particular exposure or star. Although it was applied randomly, it was consistent. It would mismatch a particular star for a particular image the same way every time it ran. This might indicate a problem with the code's logic, but the fact that it wouldn't affect every star in the same place or with the same frequency indicates otherwise. There were no syntactic errors. We even made sure all of the indents were spaces instead of a mix of spaces and tabs. Another possibility was that astronometry.net was not solving our fields properly. To address this, we opened up an image with an outlier for a particular star and 3 images that were matched correctly for the same star. We locked their WCS coordinates and had them disappear and reappear on top of each other. This would let us see if the whole image would shift because astronometry gave it a wrong WCS coordinate. There was no observed shift. Unable to find the cause, we set the flux for the stars to zero for every exposure in which the star was mismatched. 
+
+From the fluxes of each reference star, we rescaled them to by the star's average flux over all exposures taken. This was done also to the error in the flux, shown in \eqref{eq: norm}, where $f_{j}(t)$ is the flux for some reference $j$ at time $t$ and $\sigma_{f_{j}(t)}$ is the error in that particular flux.
+\begin{equation} \label{eq: norm}
 f_{j}(t)  \rightarrow \frac{f_{j}(t)}{\langle f_{j} \rangle}       \;\;\;\;\;\;\;\sigma_{f_{j}(t)} \rightarrow \frac{\sigma_{f_{j}(t)}}{\langle f_{j} \rangle}
 \end{equation}
-Where $f_{j}(t)$ is the flux for some reference $j$ at time $t$ and $\sigma_{f_{j}(t)}$ is the error in that particular flux. We normalized the flux and its error because it would allow us to visualize any changes in airmass or atmospheric turbulence during the observation. Once we had these values calculated from the equation (2) we plotted each the flux as a function of time. The light curves for all ten reference stars are shown below:
+We normalized the flux and its error because it would allow us to visualize any environmental changes that occurred throughout the night, as well as the overall shape of the lightcurves for each star. Once we had this, we plotted each of the stars' flux as a function of time. The time is the number of seconds after midnight on October $8^{\text{th}}$ in UTC time. Although the averages did take into account the non-mismatched outliers of each star, they were so few in number that the average remained unperturbed. These are shown in Fig. \ref{fig: refcurve1} - \ref{fig: scicurve1}. This was done with the code from appendix \ref{code: curves}. 
+%Light Curves
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves1.pdf}
+    \caption{Reference star 1. This variable star was removed for the duration of the experiment}
+    \label{fig: refcurve1}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves2.pdf}
+	\caption{Reference star 2}
+	\label{fig: refcurve2}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves3.pdf}
+	\caption{Reference star 3}
+	\label{fig: refcurve3}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves4.pdf}
+	\caption{Reference star 4}
+	\label{fig: refcurve4}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves5.pdf}
+	\caption{Reference star 5}
+	\label{fig: refcurve5}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves6.pdf}
+	\caption{Reference star 6}
+	\label{fig: refcurve6}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves7.pdf}
+	\caption{Reference star 7}
+	\label{fig: refcurve7}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves8.pdf}
+	\caption{Reference star 8}
+	\label{fig: refcurve8}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves9.pdf}
+	\caption{Reference star 9. The outliers rendered this star useless.}
+	\label{fig: refcurve9}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves10.pdf}
+	\caption{Reference star 10. This star was scrapped because of its outliers and large spread}
+	\label{fig: refcurve10}
+\end{figure}
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_curves11.pdf}
+	\caption{Normalized light curve of science target}
+	\label{fig: scicurve1}
+\end{figure}
 
-%Include 10  ref star light curves
-%\begin{figure}[htbp]
-%    \includegraphics[scale = 0.5]{}
-%    \label{fig:refcurve1}
-%    \caption{}
-%\end{figure}
-From these curves we can see vast changes in flux caused by the atmospheric conditions that night. Now that we know that they are present we can account for in this in our the flux from the target star by calculating it relative to the flux of the reference stars. In order to get all the flux from all the reference stars we need to calculate the weighted mean in each clean image. This can be found by using:
-\begin{equation}
+From these curves we can see vast changes in flux caused by the atmospheric conditions early that night. Due to this much variability, these images were not factored into the normalization of the plots. The normalization also ignored the fluxes at zero, which correspond to the mismatched outliers. The remaining outliers were removed via sigma clipping. Any value more than 4 sigma off from the average was removed for the duration of the experiment.
+
+Based on the lightcurves, we had to remove some reference stars entirely. The first of these, shown in Fig. \ref{fig: refcurve1}, is a variable star. Its intrinsic flux variations would throw off our calibration, making it seem as though there were atmospheric changes where there were none. Another reject is the ninth reference star, seen in Fig. \ref{fig: refcurve9}. This star appears to have been mismatched more often than not. Combining that with the large spread on the correctly matched fluxes and it becomes unusable. The final star we had to scrap was the tenth reference star, found in Fig. \ref{fig: refcurve10}. This was because of the unusually large spread and high number of correctly matched outliers.
+
+Now that we have our reference stars, we can account for environmental influences on the flux from the target star by calculating it relative to the flux of the reference stars. In order to get all the flux from all the reference stars we need to calculate the weighted mean in each clean image. This can be found by using \eqref{eq: average}, where $\mu_{i}^{ref}$ is the weighted mean for any image $i$. This average also has an error, given by \eqref{eq: error}. 
+\begin{equation} \label{eq: average}
 	\mu_{i}^{ref} = \frac{\sum_{j}\left( \frac{f_{j}^{ref}}{\left( \sigma_{j}^{ref}\right) ^{2}}\right) }{\sum_{j}\left( \frac{1}{\left( \sigma_{j}^{ref}\right) ^{2}}\right) }
 \end{equation}
-Where $\mu_{i}^{ref}$ is the weighted mean for any image $i$. This weighted mean also has an error given by:
-\begin{equation}
+\begin{equation} \label{eq: error}
 	\sigma_{i}^{ref} = \sqrt{\frac{1}{\sum_{j}\left( \frac{1}{\left( \sigma_{j}^{ref}\right) ^{2}}\right)}}
 \end{equation}
-Now that we have the weighted mean of the reference stars, we can get rid of the atmospheric changes in the science images by getting the ratio: $r_{i} = \frac{f_{i}^{sci}}{\mu_{i}^{ref}}$. The error in this ratio is given by:
-\begin{equation}
-	\sigma_{r_{i}} = r_{i}^{2} \sqrt{\left( \frac{\sigma_{f_{i}^{sci}}}{f_{i}^{sci}}\right) ^{2} + \left( \frac{\sigma_{i}^{ref}}{\mu_{i}^{ref}}\right) ^{2}}
+Now that we have the weighted mean of the reference stars, we can get rid of the atmospheric changes in the science images by getting the ratio: $r_{i} = \frac{f_{i}^{sci}}{\mu_{i}^{ref}}$. The error in this ratio is given by Eq. \eqref{error: ratio}. 
+\begin{equation}\label{error: ratio}
+\sigma_{r_{i}} = r_{i} \sqrt{\left( \frac{\sigma_{f_{i}^{sci}}}{f_{i}^{sci}}\right) ^{2} + \left( \frac{\sigma_{i}^{ref}}{\mu_{i}^{ref}}\right) ^{2}}
 \end{equation}
-We now have all the information needed: the time, science flux, weighted mean and the ratio of the two latter. The last step involves normalizing the ratio by the baseline flux of our target star (the flux when the plane is not transiting). The baseline flux was calculated by looking at the clean images taken before and after the transiting occurred, and taking the average flux of those images. The new ratio and its error will then be:
-\begin{equation}
-	r_{i} \rightarrow \frac{r_{i}}{f_{blf}} \;\;\;\;\;\;\;\;\;\;\; \sigma_{r_{i}} \rightarrow \frac{\sigma_{r_{i}}}{f_{blf}}
+This as all done by the code in appendix \ref{code: bigtable}.
+
+We now have all the information needed: the time, science flux, weighted mean and the ratio of the two latter. The last step involves normalizing the ratio by the baseline flux of our target star (the flux when the planet is not transiting). The baseline flux was calculated by looking at the clean images taken before transiting occurred, and taking the average flux of those images. Since it was so noisy, we only used the exposures from 4000-6000 seconds. The new ratio and its error will then be given by Eq. \eqref{eq: baseline}, where $f_{\text{blf}}$ is the baseline flux for a given star and the deltas represent error.
+\begin{equation}\label{eq: baseline}
+r_{i} \rightarrow \frac{r_{i}}{f_{\text{blf}}} \;\;\;\;\;\;\;\;\;\;\; \delta f_{\text{blf}} \rightarrow f_{\text{blf}} \sqrt{\left( \frac{\delta f_{\text{blf}}}{f_{\text{blf}}}\right) ^{2} + \left( \frac{\delta r_{i}}{r_{i}}\right) ^{2}}
 \end{equation}
 
-\section{Data Analysis and Results (YM)}
+We then binned this normalized data into intervals of 12 images. Since each exposure was 5 seconds, and there was about 4-5 seconds of processing time between exposures, this corresponds to about 2 minutes. This lightcurve is shown in Fig. \ref{fig: lightcurve}.
+
+%Final Lightcurve
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale = .85]{exo_lightcurve.pdf}
+	\caption{Exoplanet transit. The lightcurve was binned in intervals of about 2 minutes}
+	\label{fig: lightcurve}
+\end{figure}
+
+
+\section{Data Analysis and Results (JM)}
 \section{Discussion}
 \section{Conclusion}
-\begin{thebibliography}{9}
+
+
+\begin{thebibliography}{9}	
 \end{thebibliography}
 
 \appendix
 \section{Clean images code} \label{code: reduction}
 This was the first step in the data reduction and includes the starter code. This python program takes 5 arguments. The first four are text files containing the list of fits files to be used. These lists include the darks, long exposure flats, short exposure flats, and the science images. The last argument is a name with which all of the output files will begin. 
 
-It begins by calculating the master dark and flat images, as well as the pixel mask. This is done via function calls. In these functions, the images are loaded up from the current directory by the names provided in the input files for the program. The master images are calculated as the median instead of the mean since the former is less sensitive to outliers, and is therefore better representative of the data. The bad pixel mask was made to record the bad pixels, which was determined to be those with a value less than 2.8. This decision was made after inspecting the ds9 images. We found 2 bad pixels.
+It begins by calculating the master dark and flat images, as well as the pixel mask. This is done via function calls. In these functions, the images are loaded up from the current directory by the names provided in the input files for the program. The master images are calculated as the median instead of the mean since the former is less sensitive to outliers, and is therefore better representative of the data. The bad pixel mask was made to record the bad pixels, which was determined to be those with a value less than 2.8. This decision was made after inspecting the ds9 images and noting pixels that were more than 6 sigma away from the average. We found 2 bad pixels.
 
 The next part of the code applies these master images and the pixel mask to the science images. After looking at where the bad pixels were, we decided to ignore the data from the bad pixels entirely rather than try to extrapolate the values that they should have been based on the surrounding pixels. This was because the pixels were in a region such that they were never used for the rest of the lab.
 
@@ -322,8 +406,8 @@ pixelhdu.writeto(newpixel, clobber = True)
 \end{lstlisting}
 
 \section{Astrometry and Source Extractor scripts} \label{code: astro sex}
-These are simple bash scripts that run the clean images through astrometry.net and Source Extractor. The former is given a text file list containing the names of all of the clean images. It then runs them through astrometry, solving the images for the WCS of each image. The new FITS files returned have headers with the correct WCS entry.
-\begin{lstlisting}[language = bash, caption= Runs clean images through astrometry.net (YM)]
+These are simple bash scripts that run the clean images through astronometry.net and Source Extractor. The former is given a text file list containing the names of all of the clean images. It then runs them through astronometry, solving the images for the WCS of each image. The new FITS files returned have headers with the correct WCS entry.
+\begin{lstlisting}[language = bash, caption= Runs clean images through astronometry.net (YM)]
 #! /bin/bash -u
 #Argument is list of file 
 filename=$1
@@ -449,7 +533,7 @@ XML_NAME         sex.xml        # Filename for XML output
 \end{lstlisting}
 
 \section{Stellar fluxes and time} \label{code: flux}
-This python program takes text file lists as arguments. The first two are the names of the catalog files from Source Extractor and solved clean science images from astrometry. The last takes the coordinates of the reference and science stars. The script finds all of these stars in each image from the catalog files. This is done by finding the star that is closest to the coordinates of each star in each image. If the matching radius is more than one arcsecond, it ignores that exposure for that star. It then outputs in a text file the time of the image and the flux, flux error, matching distance, and catalog number for each star. The last two are only used for reference and troubleshooting; they are not used in the rest of the lab. If a star was ignored in an image, the flux and flux error is set to zero. The last part of the code tells the user how many stars were ignored. 
+This python program takes text file lists as arguments. The first two are the names of the catalog files from Source Extractor and solved clean science images from astronometry. The last takes the coordinates of the reference and science stars. The script finds all of these stars in each image from the catalog files. This is done by finding the star that is closest to the coordinates of each star in each image. If the matching radius is more than one arcsecond, it ignores that exposure for that star. It then outputs in a text file the time of the image and the flux, flux error, matching distance, and catalog number for each star in each image. The last two are only used for reference and troubleshooting; they are not used in the rest of the lab. The increase in the matching radius for certain stars in specific images indicated to us that they were being incorrectly matched to another star. The catalog number allowed us to use ds9 and confirm that the stars were mismatched. To determine which stars were mismatched, we set the maximum matching radius to one arcsecond. If a star was ignored in an image, the flux and its error is set to zero. The last part of the code tells the user how many stars were ignored. 
 
 \begin{lstlisting}[language = Python, caption = Outputs the flux and its error for each star in every exposure as well as the time for each image (YM)]
 import numpy as np
@@ -571,8 +655,8 @@ for i in range(0, numberofstars):
 print('\n\n' + str(passedstars) + ' stars were ignored')
 \end{lstlisting}
 
-\section{Clean tables and convert times} \label{code: mulitcommand}
-This bash script takes as argument a text file list containing the names of the files from \ref{code: flux}. It also gets rid of the square brackets and extra spaces in the table that results from writing a numpy array directly to a file. Finally, it removes the date from the time column and converts the time to seconds. Like all of the bash scripts in this lab, it replaces the files it changes rather than makes copies. It does this by making the changes on clones of the files, removes the old files, and then renames the new files to match the names of the old ones.
+\section{Clean tables and convert times} \label{code: multicommand}
+This bash script takes as argument a text file list containing the names of the files from appendix \ref{code: flux}. It also gets rid of the square brackets and extra spaces in the table that results from writing a numpy array directly to a file. Finally, it removes the date from the time column and converts the time to seconds. Like all of the bash scripts in this lab, it replaces the files it changes rather than makes copies. It does this by making the changes on clones of the files, removes the old files, and then renames the new files to match the names of the old ones.
 
 \begin{lstlisting}[language = bash, caption = Cleans up file and readies for the rest of the lab (YM)]
 #! /bin/bash -u
@@ -603,9 +687,9 @@ done < $filelist
 \end{lstlisting}
 
 \section{Plotting the curves} \label{code: curves}
-This program takes a list of all of the files produced by the code in \ref{code: flux} as its argument. In the first part, it normalizes each star to its average flux. This average ignores the first 288 images and any exposures that were ignored in the code from \ref{code: flux}. It then plots each star's lightcurve using this normalized flux. It also shows where the data in the beginning was cut off. These plots are saved as files.
+This program takes a list of all of the files produced by the code in appendix \ref{code: multicommand} as its argument. In the first part, it normalizes each star to its average flux. This does not take into account the noisy beginning exposures, outliers, or the mismatched stars. It then plots each star's lightcurve using this normalized flux. These plots are saved as files.
 
-The second half of this program outputs text files containing the time of each exposure and the normalized flux and its error for each star. These tables set any remaining outliers to zero. It defines an outlier as one that is more than 4 sigma away from the average flux for that star. The exception is the science target. It does not get normalized to its average. However, it does receive the same sigma clipping treatment.
+The second half of this program outputs text files containing the time of each exposure and the normalized flux and its error for each star. These tables set any remaining outliers to zero. It defines an outlier as one that is more than 4 sigma away from the average flux for that star. The exception is the science target, which does not get normalized to its average. However, it does receive the same sigma clipping treatment.
 \begin{lstlisting}[language = Python, caption = Plots the lightcurves for each star and outputs fluxes to files (YM and JM)]
 import pyfits
 import numpy as np
@@ -628,7 +712,7 @@ ctr = 0
 
 for tablefile in open(fluxlist):
 	ctr += 1
-	#fig.clf()
+	fig.clf()
 	
 	#Open file
 	tablefile = tablefile.rstrip('\n')
@@ -640,75 +724,53 @@ for tablefile in open(fluxlist):
 	time = data[:,0]
 	
 	#Normalize flux and ignore outliers
-	flux = fluxdata[np.where(fluxdata!=0)]  #flux used for average (no outliers)
-	flux = flux[287:]                       #flux ignores beginning exposures
+	flux = fluxdata[np.where(fluxdata!=0)]  #flux used for average 
+	flux = flux[287:]                       #flux ignores beginning exposures (no outliers)
+	fluxerror = fluxerrordata[287:]         #fluxerror ignores beginning images 
 	average = np.mean(flux)    #average ignores beginning exposures
 	n = flux.shape[0]
 	sigma = m.sqrt( np.sum((flux-average)**2) / (n-1))
 	normfluxdata = fluxdata/average          #normfluxdata normalizes ALL exposures
-	normfluxerrordata = fluxerrordata/average
+	normfluxerrordata = fluxerrordata/average #normfluxerrordata normalizes ALL exposures
 	
-	#Plot data with verical line showing where we cut off data
+	#Plot data
 	plt.errorbar(time, normfluxdata, yerr = normfluxerrordata, fmt = 'r.')
-	if (ctr == 2):                                   #these lines add vertical lines
-		plt.plot((5504, 5504), (0, 1.8), 'k-')
-	elif (ctr == 1):
-		plt.plot((5504,5504), (0,1.4), 'k-')
-	else:
-		plt.plot((5504, 5504), (0,1.2), 'k-') 
-	fig.savefig('exo_curves' + str(ctr) + '.pdf', bbox_inches='tight', dpi=fig.dpi)	
+	fig.savefig('exo_curves' + str(ctr) + '.pdf', bbox_inches='tight', dpi=fig.dpi)
 	
 	#Make files containing time, flux, and error
 	#For the science target, we won't normalize to average
 	if (ctr == 11):
-		#Mark non-zero outliers more that 2 sigma away as zero
-		fluxdata[np.where(fluxdata < (average - 4*(sigma)))] = 0.0
-		fluxdata[np.where(fluxdata > (average + 4*(sigma)))] = 0.0
-		fluxerrordata[np.where(fluxdata < (average - 4*(sigma)))] = 0.0
-		fluxerrordata[np.where(fluxdata > (average + 4*(sigma)))] = 0.0
-	
+		#Scrap non-zero outliers more that 2 sigma away for non-beginning exposures
+		tempflux = fluxdata[287:]                 #no beginning exposures, HAS outliers
+		tempflux[np.where(tempflux < (average - 4*(sigma)))] = 0.0
+		tempflux[np.where(tempflux > (average + 4*(sigma)))] = 0.0
+		fluxerror[np.where(tempflux < (average - 4*(sigma)))] = 0.0
+		fluxerror[np.where(tempflux > (average + 4*(sigma)))] = 0.0
+		
 		#Write average fluxes to file
 		filename = ('exo_fluxdata' + str(ctr) + '.txt')
-		np.savetxt(filename, np.column_stack((time, fluxdata, fluxerrordata)), fmt='%f')
-		
+		finalflux = np.concatenate((fluxdata[:287], tempflux), axis = 0) #flux with beginning
+		finalfluxerror = np.concatenate((fluxerrordata[:287], fluxerror), axis=0)        
+		np.savetxt(filename, np.column_stack((time, finalflux, finalfluxerror)), fmt='%f') 
 	#For the others, we will normalize to average
 	else:
-		#Slate non-zero outliers more that 2 sigma away for termination
-		normfluxdata[np.where(fluxdata < (average - 4*(sigma)))] = 0.0
-		normfluxdata[np.where(fluxdata > (average + 4*(sigma)))] = 0.0
-		normfluxerrordata[np.where(fluxdata < (average - 4*(sigma)))] = 0.0
-		normfluxerrordata[np.where(fluxdata > (average + 4*(sigma)))] = 0.0
-	
+		#Scrap non-zero outliers more that 2 sigma away for non-beginning exposures
+		tempflux = normfluxdata[287:]            #ignores first exposures
+		tempfluxerror = normfluxerrordata[287:]   #ignores first exposures
+		tempflux[np.where( tempflux < ((average - 4*sigma)/average) )] = 0.0
+		tempflux[np.where( tempflux > ((average + 4*sigma)/average) )] = 0.0
+		tempfluxerror[np.where( tempflux < ((average - 4*sigma)/average) )] = 0.0
+		tempfluxerror[np.where( tempflux > ((average + 4*sigma)/average) )] = 0.0
+		
 		#Write average fluxes to file
 		filename = ('exo_fluxdata' + str(ctr) + '.txt')
-		np.savetxt(filename, np.column_stack((time, normfluxdata, normfluxerrordata)), fmt='%f')
-\end{lstlisting}
-
-\section{Selecting exposures} \label{code: select}
-This quick bash script removes the first 288 exposures from all of the files specified by the input, which is a text file list containing the names of files to modify. The files are the results from the code in \ref{code: curves} that will be used in the rest of the lab.
-\begin{lstlisting}[language = bash, caption = Removes first 288 exposures (YM)]
-#! /bin/bash -u
-#Removes exposures for reference stars that we don't want
-
-#Argument is text file of list of files to modify
-filelist=$1
-
-while read -r oldfile
-do
-	#Make temporary file to hold changes
-	newfile=${oldfile}.temp
-	
-	#Delete first 288 lines
-	sed '1,288d' <$oldfile >$newfile
-	
-	#Make changes permenent
-	rm -f $oldfile
-	mv $newfile $oldfile
-done < $filelist
+		normflux = np.concatenate((normfluxdata[:287], tempflux), axis = 0)
+		normfluxerror = np.concatenate((normfluxerrordata[:287], tempfluxerror), axis = 0)
+		np.savetxt(filename, np.column_stack((time, normflux, normfluxerror)), fmt='%f')
 \end{lstlisting}
 
 \section{Master table} \label{code: bigtable}
-This Python program takes as argument some of the files from the code from \ref{code: select}. It ignores the first, ninth, and tenth reference stars. It begins by calculating the weighted average and its error of the fluxes from the reference stars in each exposure. It then normalizes the science flux by this average. The error in this ratio is also calculated. The output is a text file containing the time, unnormalized science flux and its error, weighted average of the reference stars, and the normalized science flux and its error. 
+This Python program takes as argument some of the files created by the code from appendix \ref{code: curves}. It ignores the first, ninth, and tenth reference stars. It begins by calculating the weighted average and its error of the fluxes from the reference stars in each exposure. It then normalizes the science flux by this average. The error in this ratio is also calculated. The output is a text file containing the time, unnormalized science flux and its error, weighted average of the reference stars, and the normalized science flux and its error. 
 
 \begin{lstlisting}[language = Python, caption = Creates table of values to be used for the final light curve (YM and JM)]
 import pdb
@@ -797,6 +859,8 @@ for i in range(0, fluxerrordata.shape[0]):     #i = image index
 		denominator += (1.0/(fluxerrordata[i, n]**2))
 	
 	#Actual average and error for each image
+	if (numerator == 0) and (denominator == 0):     #ignore the beginning exposures
+		continue
 	mu_ref[i] = numerator/denominator
 	sigma_ref[i] = m.sqrt(1.0/denominator)
 
@@ -816,7 +880,7 @@ with open('exo_masterrecord.txt', 'w+') as outfile:
 \end{lstlisting}
 
 \section{Lightcurve} \label{code: lightcurve}
-The following code takes as input the table produced by the code in \ref{code: bigtable}. It calculates the baseline flux, which is used to normalize the ratio defined in the same earlier code. The baseline flux is the average flux when the planet is not transiting the star. The program then gets rid of the ignored exposures and any remaining outliers. Finally, it bins the lightcurve, plots it, and saves the image to a file. 
+The following code takes as input the table produced by the code in appendix \ref{code: bigtable}. It calculates the baseline flux, which is used to normalize the ratio defined in the same earlier code. The baseline flux is the average flux when the planet is not transiting the star. The exposures to be used for calculating the baseline can be set within the main body of the program. The function \verb|getLim| matches the range of exposures to the range of indices for the array holding the images. The program then gets rid of the ignored exposures. Finally, it bins the lightcurve, plots it, and saves the image to a file. 
 
 \begin{lstlisting}[language = Python, caption= Plots the lightcurve for our transit]
 import pdb
@@ -827,50 +891,83 @@ import matplotlib.pyplot as plt
 
 #Calculate average and its error for a given data set
 def Average(values, error= None):
-	#Weighted average
+	#No error in the values
 	if (error is None):
 		#Calculate the average
 		mu = np.sum(values)/values.shape[0]
 		
 		#Calculate the error
-		s = np.sum((values-mu)**2)/((values.shape[0] - 1))
+		s = np.sum((values - mu)**2)/(values.shape[0] - 1)
 		sigma = m.sqrt(s/values.shape[0])
-	#Unweighted average
-	else:
-		#Caluclate the average
-		num = np.sum(values/(error**2))
-		denom = np.sum(1.0/(error**2))
-		mu = num/denom
 		
-		#Calculate the error
-		sigma = m.sqrt(1.0/denom)
+	#Error in the values
+	else:
+		#Initialize stuff
+		num = 0
+		denom = 0
+		
+		#Caluclations
+		for n in range(0, values.shape[0]):
+			if values[n] == 0:  #ignore outliers
+				continue
+			num += values[n]/(error[n]**2)
+			denom += 1.0/(error[n]**2)
+		
+		#Mu and Sigma 
+		if (num == 0) and (denom == 0):    #in case series of outliers
+			mu = 0
+			sigma = 0
+		elif denom == 0:                   #in case no error
+			mu = num/denom
+			sigma == 0                
+		else:                              #if normal
+			mu = num/denom
+			sigma = m.sqrt(1.0/denom)
+			
+		return (mu, sigma)
+		
+#Gives limits (indices) of exposures used for baseline flux
+def getLim(images, lowexp, upexp):
+	l = np.array(np.where(images > lowexp))
+	u = np.array(np.where(images < upexp))
 	
-	return (mu, sigma)
+	lowlim = l[0, 1]
+	uplim  = u[0, -1]
+	
+	return (lowlim, uplim)
 
 #Extract data from input
 tablefile = sys.argv[1]
 mastertable = np.loadtxt(tablefile)
-limit = 1100        #this picture number onwards is used for baseline flux
-
-#Ignore outliers and caluclate the baseline flux
+exposures = mastertable[:,0]
 sci_flux = mastertable[:, 1]
 sci_error = mastertable[:, 2]
-ignore = np.where(sci_flux == 0)
-sci_flux = np.delete(sci_flux, ignore)   #ignore outliers
-sci_error = np.delete(sci_error, ignore)  #ignore outliers
-baseline, baseline_error = Average(sci_flux[(limit - 1):], sci_error[(limit - 1):])
-
-#Normalize the ratio by baseline flux
 ratio = mastertable[:, 4]
 ratio_error = mastertable[:, 5]
-ratio = np.delete(ratio, ignore)  #ignore outliers
-ratio_error = np.delete(ratio_error, ignore)  #ignore outliers
-flux = ratio/baseline
-flux_error = flux * np.sqrt((baseline_error/baseline)**2 + (ratio_error/ratio)**2)
 
 #Get times for exposures
-exposures = mastertable[:,0]
+ignore = np.where(sci_flux == 0)          #locations of outliers
 exposures = np.delete(exposures, ignore)  #ignore outliers
+
+#Get exposure indicies for the range of fluxes from which to calculate baseline flux
+lowlimit, uplimit = getLim(exposures, 4000, 6000) #picture number for lower limit of fluxes used for baseline
+
+#Ignore outliers and caluclate the baseline flux
+sci_flux = np.delete(sci_flux, ignore)    #ignore outliers
+sci_error = np.delete(sci_error, ignore)  #ignore outliers
+baseline, baseline_error = Average(sci_flux[(lowlimit-1) : (uplimit+1)], sci_error[(lowlimit-1) : (uplimit+1)])
+
+#Get ratios
+ratio = np.delete(ratio, ignore)  #ignore outliers
+ratio_error = np.delete(ratio_error, ignore)  #ignore outliers
+
+#Normalize the ratio by baseline flux
+flux = ratio/baseline
+flux_error = np.zeros(flux.shape[0])
+for i in range(0,flux.shape[0]):
+	if ratio[i] == 0:
+		continue
+	flux_error[i] = flux[i] * np.sqrt((baseline_error/baseline)**2 + (ratio_error[i]/ratio[i])**2)
 
 #Set up for binning
 binsize = 12
@@ -879,11 +976,19 @@ times_error = np.zeros(times.shape[0])
 sciencecurve = np.zeros(((flux.shape[0]/binsize) + 1))
 sciencecurve_error = np.zeros(sciencecurve.shape[0])
 ctr = 0             #counter for index of times array
+rmLastBin = False
 
 #Bin times and fluxes
 for n in range(0, exposures.shape[0], binsize):
 	#Times
-	bintime, bintime_error = Average(exposures[n:n+binsize])
+	if (n + binsize)>= exposures.shape[0]:         #last exopsure has smaller bin size
+		#binflux, binflux_error = Average(exposures[n:exposures.shape[0]])
+		#Uncomment above line if you want the last bin
+		#The line below is if you want to ignore it 
+		rmLastBin = True
+		continue
+	else:                                          #rest of exposures have normal bin sizes
+		bintime, bintime_error = Average(exposures[n:n+binsize])
 	times[ctr] = bintime
 	times_error[ctr] = bintime_error
 	
@@ -894,6 +999,13 @@ for n in range(0, exposures.shape[0], binsize):
 	
 	ctr += 1
 
+#Remove last bin if needed
+if rmLastBin:
+	times = times[:-1]
+	times_error = times_error[:-1]
+	sciencecurve = sciencecurve[:-1]
+	sciencecurve_error = sciencecurve_error[:-1]
+
 #Plot our light curve
 fig = plt.figure()
 plt.grid(True)
@@ -903,7 +1015,5 @@ plt.title('Lightcurve for HD 209458')
 plt.errorbar(x = times, y = sciencecurve, xerr = times_error, yerr = sciencecurve_error, fmt = 'k.')
 plt.show()
 fig.savefig('exo_lightcurve.pdf', bbox_inches='tight', dpi=fig.dpi)
-
 \end{lstlisting}
-
 \end{document}
