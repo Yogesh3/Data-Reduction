@@ -94,7 +94,9 @@
 
 
 \begin{abstract}
-Our goal for this experiment was to successfully detect a Jupiter-type exoplanet, and from this to see whether it has the known mid-transit time and transit duration. Also, from the depth of the transit we want to get the ratio between the radii of the planet and the star. In our experiment we choose to view the star HD 209458 while its planet HD 209458b, also known as Osiris, was transiting. 
+Our goal for this experiment was to successfully detect a Jupiter-type exoplanet, and from this to see whether it has the known mid-transit time and transit duration. Also, from the depth of the transit we want to get the radius of the exoplanet. In our experiment we choose to view the star HD 209458 while its planet HD 209458b, also known as Osiris, was transiting. 
+
+We used a 14-inch Meade LX200-ACF telescope at Mt. Stony Brook Observatory to locate HD 209458, and a SBIG STL-1001E CCD camera to measure the flux received before, during and after the transit. Using various Python scripts shown in the Appendix and other astronomy programs, we were able to reduce the data and get a light curve of HD 209458. From this light curve, we deduced that the radius of Osiris is 1.5072 $\pm$ 0.08674 $R_{\text{Jup}}$. 
 \end{abstract}
 
 \section{Introduction (JM)} \label{sec:intro}
@@ -103,7 +105,7 @@ It has only been within the past decade and a half that we have been able to det
 This is the method we used in our experiment and it has proven very successful over the years for hundreds of other astronomers. Although it has already been confirmed that there is an exoplanet around HD 209458, our experiment was significant because it allowed us to see first hand how powerful the method of transit photometry is. By just knowing the dip in relative flux, we can determine the ratio between the radii of the planet and star. Then from knowing the radius of the host star, we can determine the radius of the exoplanet. This is the reason why this method is so powerful: it allows us to learn the properties of planets hundreds of light years away without even viewing or seeing the planet. 
 
 \section{Observations (JM)}
-We decided to observe HD 209458 because of the unique characteristics of the system. The star is of G type making it very similar to our own star, having a mass of 1.148 $M_\sun$ and a radius of 1.203 $R_\sun$. The planet has a radius 1.38 times that of Jupiter, while orbiting and nearly one eighth the orbital radius of Mercury to the Sun. This makes Osiris a hot Jupiter type planet because its the size of Jupiter but extremely close to it's star. This type of system is a great candidate for exoplanet detection through transit photometry. This is because the star is of average size, while having a huge Jupiter size planet orbiting it. This makes detecting a dip in the relative flux when the planet transits a lot easier. The only negative about this system is the orbital radius of Osiris, because the closer a planet is to its star the harder it will be to detect it. Although it makes up for it by the size of Osiris and the relatively bright star of 7.65 apparent magnitude.
+We decided to observe HD 209458 because of the unique characteristics of the system. The star is of G type making it very similar to our own star, having a mass of 1.148 $\pm$ 0.022 $M_\sun$ and a radius of 1.146 $\pm$ 0.050 $R_\sun$. The planet has a radius 1.451 times that of Jupiter with an uncertainty of 0.074, while orbiting at nearly one eighth the orbital radius of Mercury to the Sun. This makes Osiris a hot Jupiter type planet because its the size of Jupiter but extremely close to it's star. This type of system is a great candidate for exoplanet detection through transit photometry. This is because the star is of average size, while having a huge Jupiter size planet orbiting it. This makes detecting a dip in the relative flux when the planet transits a lot easier. The only negative about this system is the orbital radius of Osiris, because the closer a planet is to its star the harder it will be to detect it. Although it makes up for it by the size of Osiris and the relatively bright star of 7.65 apparent magnitude. This is a result of the star system being only 47 pc away.
 
 We were able to observe HD 209458 and its transiting planet by using a 14-inch Meade LX200-ACF telescope with a SBIG STL-1001E CCD camera attached. This yields a field of view of 26 arcminutes for the exposures. All observations were held at the Mt. Stony Brook Observatory. The weather that night was mostly clear with some thin, high-altitude clouds in the beginning of observations. By the end of the experiment the sky was largely clear of clouds. The seeing was mostly good throughout the night as well, with there being very little wind. We calculated the total transit duration to be 3.54 hours, with a mid-transit time of October $8^{\text{th}}$, 2016 at 02:23:23 UTC. The transit duration was calculated using the following equation:
 \begin{equation}
@@ -111,7 +113,34 @@ T_{duration} = \frac{P}{\pi}\arcsin\left(\frac{\sqrt{(R_*+R_P)^{2}-(bR_*)^{2}}}{
 \end{equation}
 Where $P$, $a$ and $b$ are all the period, semi-major axis and impact parameter of the planet respectively, and $R_*$ and $R_P$ are the radii of the star and planet respectively. The mid-transit time was calculated from knowing the period of the planet, and knowing a specific time when the transit began in the past. From this information we simply just have to keep adding the period time to the time of transit until we reach current day. We figured out where our star should be in the night sky by using the program StarAlt. It helps show whether stars are viewable depending on your location on Earth and your elevation.
 
-We first tried to find the star by going to it's right accession and declination, and made sure that the star we found was HD 209458 by looking at our finder charts. Once we confirmed the star we made sure it was centered on the cross hairs of the eyepiece. We then made sure the CCD camera was connected correctly to the telescope and the program CCDSoft, which is used for adjusting the exposure times and other settings of the CCD. We first tried to take four exposures of our star with an exposure time (exp. time) of three seconds each. This resulted in counts that were too high because the star was focused too well on the CCDSoft. High counts are bad because the pixels on the CCD can be oversaturated at around 60,000 counts and not yield good data. So for the next exposure we defocused the star, while increasing the exposure time to five seconds, which resulted in lower counts around 20,000. We kept this exposure time for the rest of the science exposures. By the end of the experiment we took 1,461 science exposures, all with an exposure time of five seconds. After this we started to take our calibration data, starting with the darks. In order to take the darks we put the telescope cap back on so we have complete darkness. We then took 19 dark exposures each of five seconds, then we took out flats. We took the cap off and pointed the telescope towards a equally lit part of the dome. At first we took 19 flats each of five seconds, but it turned out the counts were too high. So we lowered the exposure time to three seconds and lowered the lights in the observatory. This yielded in lower counts and better flat fields. Finally we took another set of flats with a shorter exposure time of one second. This is so later we can create a bad pixel mask so we know where the bad pixels are on the CCD. 
+We first tried to find the star by going to it's right accession and declination, and made sure that the star we found was HD 209458 by looking at our finder charts. Once we confirmed the star we made sure it was centered on the cross hairs of the eyepiece. We then made sure the CCD camera was connected correctly to the telescope and the program CCDSoft, which is used for adjusting the exposure times and other settings of the CCD. We first tried to take four exposures of our star with an exposure time (exp. time) of three seconds each. This resulted in counts that were too high because the star was focused too well on the CCDSoft. High counts are bad because the pixels on the CCD can be oversaturated at around 60,000 counts and not yield good data. So for the next exposure we defocused the star, while increasing the exposure time to five seconds, which resulted in lower counts around 20,000. We kept this exposure time for the rest of the science exposures. By the end of the experiment we took 1,461 science exposures, all with an exposure time of five seconds. After this we started to take our calibration data, starting with the darks. In order to take the darks we put the telescope cap back on so we have complete darkness. We then took 19 dark exposures each of five seconds, then we took out flats. We took the cap off and pointed the telescope towards a equally lit part of the dome. At first we took 19 flats each of five seconds, but it turned out the counts were too high. So we lowered the exposure time to three seconds and lowered the lights in the observatory. This yielded in lower counts and better flat fields. Finally we took another set of flats with a shorter exposure time of one second. This is so later we can create a bad pixel mask so we know where the bad pixels are on the CCD. Below is a table of the logsheet we used during observations. The time written down is in EST, and was taken from the computer we were using. 
+\begin{deluxetable*}{ccCrlc}[h!]
+	\tablecaption{Logsheet of Observations \label{tab:logsheet}}
+	\tablecolumns{13}
+	\tablenum{1}
+	\tablewidth{0pt}
+	\tablehead{
+		\colhead{File Number} &
+		\colhead{Object} &
+		\colhead{Exp. Time} & \colhead{Time} & \colhead{Comments} \\
+		\colhead{} & \colhead{} & \colhead{(s)} & \colhead{(EST)} & \colhead{}
+	}
+	\startdata
+	science.0-4 & transit & 3 & 8:41 pm & Focused too well \\
+	science.5 & $\downarrow$ & 5 & 8:42 pm & Max. count of 23,000 \\
+	science.6 & $\downarrow$ & $\downarrow$ & 8:43 pm & First of 800 \\
+	science.7-75 & $\downarrow$ & $\downarrow$ & 8:55 pm & \nodata \\
+	science.76-797 & $\downarrow$ & $\downarrow$ & 10:55 pm & Last of 800 set \\
+	science.798 & $\downarrow$ & $\downarrow$ & 10:55 pm & First of next 800 \\
+	science.1087-1088 & $\downarrow$ & $\downarrow$ & 11:42 pm & Long streak of light appeared \\
+	science.1461 & transit & $\downarrow$ & 12:43 am & Last transit exposure \\
+	darks.0-19 & darks & $\downarrow$ & 12:58 am & 19 darks taken \\
+	flats.0-19 & flats & 5 & 1:05 am & Exposures was too long \\ 
+	flats.20-29 & $\downarrow$ & 3 & 1:07 am & Lowered lights and exposure, counts at 18,000 \\
+	flats.30-39 & $\downarrow$ & 1 & 1:08 am & Shorter exposure, countd at 6,000 \\
+	\enddata
+	\tablecomments{We expected to take two sets of 800 exposures of the science tansit, however we stopped at around 1,500 exposures do to time. All of the files are .FIT files.}
+\end{deluxetable*}
 
 
 \section{Data Reduction (JM and YM)}
@@ -129,69 +158,69 @@ f_{j}(t)  \rightarrow \frac{f_{j}(t)}{\langle f_{j} \rangle}       \;\;\;\;\;\;\
 \end{equation}
 We normalized the flux and its error because it would allow us to visualize any environmental changes that occurred throughout the night, as well as the overall shape of the lightcurves for each star. Once we had this, we plotted each of the stars' flux as a function of time. The time is the number of seconds after midnight on October $8^{\text{th}}$ in UTC time. Although the averages did take into account the non-mismatched outliers of each star, they were so few in number that the average remained unperturbed. These are shown in Fig. \ref{fig: refcurve1} - \ref{fig: scicurve1}. This was done with the code from appendix \ref{code: curves}. 
 %Light Curves
-\begin{figure}[h]
+\begin{figure}[hbt!]
 	\centering
-	\includegraphics[scale = .85]{exo_curves1.pdf}
+	\includegraphics[scale = .30]{exo_curves1.pdf}
     \caption{Reference star 1. This variable star was removed for the duration of the experiment}
     \label{fig: refcurve1}
 \end{figure}
-\begin{figure}[h]
+\begin{figure}[hbt!]
 	\centering
-	\includegraphics[scale = .85]{exo_curves2.pdf}
+	\includegraphics[scale = .30]{exo_curves2.pdf}
 	\caption{Reference star 2}
 	\label{fig: refcurve2}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves3.pdf}
+	\includegraphics[scale = .30]{exo_curves3.pdf}
 	\caption{Reference star 3}
 	\label{fig: refcurve3}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves4.pdf}
+	\includegraphics[scale = .30]{exo_curves4.pdf}
 	\caption{Reference star 4}
 	\label{fig: refcurve4}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves5.pdf}
+	\includegraphics[scale = .30]{exo_curves5.pdf}
 	\caption{Reference star 5}
 	\label{fig: refcurve5}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves6.pdf}
+	\includegraphics[scale = .30]{exo_curves6.pdf}
 	\caption{Reference star 6}
 	\label{fig: refcurve6}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves7.pdf}
+	\includegraphics[scale = .30]{exo_curves7.pdf}
 	\caption{Reference star 7}
 	\label{fig: refcurve7}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves8.pdf}
+	\includegraphics[scale = .30]{exo_curves8.pdf}
 	\caption{Reference star 8}
 	\label{fig: refcurve8}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves9.pdf}
+	\includegraphics[scale = .30]{exo_curves9.pdf}
 	\caption{Reference star 9. The outliers rendered this star useless.}
 	\label{fig: refcurve9}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves10.pdf}
+	\includegraphics[scale = .30]{exo_curves10.pdf}
 	\caption{Reference star 10. This star was scrapped because of its outliers and large spread}
 	\label{fig: refcurve10}
 \end{figure}
 \begin{figure}[h]
 	\centering
-	\includegraphics[scale = .85]{exo_curves11.pdf}
+	\includegraphics[scale = .30]{exo_curves11.pdf}
 	\caption{Normalized light curve of science target}
 	\label{fig: scicurve1}
 \end{figure}
@@ -213,26 +242,39 @@ Now that we have the weighted mean of the reference stars, we can get rid of the
 \end{equation}
 This as all done by the code in appendix \ref{code: bigtable}.
 
-We now have all the information needed: the time, science flux, weighted mean and the ratio of the two latter. The last step involves normalizing the ratio by the baseline flux of our target star (the flux when the planet is not transiting). The baseline flux was calculated by looking at the clean images taken before transiting occurred, and taking the average flux of those images. Since it was so noisy, we only used the exposures from 4000-6000 seconds. The new ratio and its error will then be given by Eq. \eqref{eq: baseline}, where $f_{\text{blf}}$ is the baseline flux for a given star and the deltas represent error.
+We now have all the information needed: the time, science flux, weighted mean and the ratio of the two latter. The last step involves normalizing the ratio by the baseline flux of our target star (the flux when the planet is not transiting). The baseline flux was calculated by looking at the clean images taken before transiting occurred, and taking the average flux of those images. Since it was so noisy, we only used the exposures from 4000-6000 seconds. The new ratio and its error will then be given by Eq. \eqref{eq: baseline}, where $f_{\text{blf}}$ is the baseline flux for a given star.
 \begin{equation}\label{eq: baseline}
-r_{i} \rightarrow \frac{r_{i}}{f_{\text{blf}}} \;\;\;\;\;\;\;\;\;\;\; \delta f_{\text{blf}} \rightarrow f_{\text{blf}} \sqrt{\left( \frac{\delta f_{\text{blf}}}{f_{\text{blf}}}\right) ^{2} + \left( \frac{\delta r_{i}}{r_{i}}\right) ^{2}}
+r_{i} \rightarrow \frac{r_{i}}{f_{\text{blf}}} \;\;\;\;\;\;\;\;\;\;\; \sigma_{ f_{\text{blf}}} \rightarrow f_{\text{blf}} \sqrt{\left( \frac{\sigma_{ f_{\text{blf}}}}{f_{\text{blf}}}\right) ^{2} + \left( \frac{\sigma_{ r_{i}}}{r_{i}}\right) ^{2}}
 \end{equation}
 
 We then binned this normalized data into intervals of 12 images. Since each exposure was 5 seconds, and there was about 4-5 seconds of processing time between exposures, this corresponds to about 2 minutes. This lightcurve is shown in Fig. \ref{fig: lightcurve}.
 
 %Final Lightcurve
-\begin{figure}[h]
+\begin{figure}[hbt!]
 	\centering
-	\includegraphics[scale = .85]{exo_lightcurve.pdf}
+	\includegraphics[scale = .50]{exo_lightcurve.pdf}
 	\caption{Exoplanet transit. The lightcurve was binned in intervals of about 2 minutes}
 	\label{fig: lightcurve}
 \end{figure}
 
 
 \section{Data Analysis and Results (JM)}
-\section{Discussion}
+We finally reduced all our data to produce a finished light curve of HD 209458b transiting its host star. Now our goal is to determine the radius of the transiting exoplanet. This can be done by first noticing the change in flux based on the transit depth. When the planet is not transiting we should expect to see that the normalized ratio $r_{i}$ should be around 1.0 since we normalized it by the baseline flux. When the transit is occurring we should expect the ratio to be 1.0 - $\epsilon$ , where $\epsilon$ is lowest flux received during the transit. This is basically the change in flux, $\Delta f$, during the transit, or the total transit depth. From this we can get the ratio of the areas between the planet and star. Since we are assuming we are looking at the transit head on, we can assume that both objects are flat disks of area $\pi r^{2}$, where $r$ is the radius of the object. Setting it all up, we have the equation:
+\begin{equation}
+	\Delta f = \frac{\pi R_{P}^{2}}{\pi R_{*}^{2}}
+\end{equation}
+Solving for the planet radius we get:
+\begin{equation}
+	R_{P} = \sqrt{\Delta f \; R_{*}^{2}}
+\end{equation}
+The error in the radius is given by:
+\begin{equation}
+	\sigma_{R_{P}} = \frac{R_{P}}{2}\sqrt{\left( \frac{\sigma_{ \Delta f}}{\Delta f}\right)^{2}  + 4\left( \frac{\sigma_{ R_{*}}}{R_{*}}\right)^{2} } 
+\end{equation}
+Now that we have all the equations set up, we can plug in our values. Looking at the light curve, it can be seen that near the middle of the transit the fluxes get very messy. In order to get a value for the lowest flux in the transit, we took the average of the values near around the bottom of the light curve. This resulted in a value of 0.9809125 $\pm$ 0.0013581. This yields a transit depth of 0.0190875 $\pm$ 0.0013581. As stated in the Observations section, we have a stellar radius of 1.146 $\pm$ 0.050 $R_{\sun}$. Plugging the values into equations (8) and (9) and converting to $R_{\text{Jup}}$, we get a planet radius of 1.54072 $\pm$ 0.08674 $R_{\text{Jup}}$
+\section{Discussion (JM)}
+Comparing the experimental value to the theoretical value of 1.451 $\pm$ 0.074 $R_{\text{Jup}}$, we can see that they agree within error. 
 \section{Conclusion}
-
 
 \begin{thebibliography}{9}	
 \end{thebibliography}
