@@ -96,9 +96,9 @@
 \begin{abstract}
 The goal of this experiment was to measure the angular profile of the Sun through two methods: using a single dish radio antenna and using a radio interferometer. From these profiles and scans of an unresolved point source (geosynchronous satellite), we can determine the angular diameter of the Sun.
 
-We obtained our data by using the Stony Brook Radio telescope, which is able to switch between single dish and interferometry mode. The data we obtained was did not allow us to get reasonable results, so we borrowed another lab groups data.
+We obtained our data by using the Stony Brook Radio telescope, which is able to switch between single dish and interferometry mode. This telescope was built by Professor Jin Koda, and is quite powerful for something so the cost so little. Despite some technical mishaps with the instruments and uncooperative weather, we were able to obtain our data. 
 
-For the interferometric mode, we obtained an angular diameter of (insert here), and (insert here) for single dish mode. Comparing both to the literature value of the angular diameter of the Sun, 32', we can see that...
+For the interferometric mode, we obtained an angular diameter of 43.99' $\pm$ 0.06'. Comparing to the literature value of the angular diameter of the Sun on our observation date, 31.7', we can see that they do not agree within error. As for the single dish results, we did not have adequate enough data to deduce anything from it. 
 \end{abstract}
 
 \section{Introduction} \label{sec:intro}
@@ -106,20 +106,20 @@ The field of radio astronomy has grown exponentially just in the past 80 years. 
 
 For many years astronomers kept improving the technology; however, they were always limited by the size of the telescope since you need a large diameter to resolve the huge radio wavelengths Also, it took a long time and always cost a lot to build these near football size telescope dishes. A breakthrough happened in the mid 1940's when astronomers started to apply the properties of interferometry to radio telescopes. Instead of having one huge telescope dish, you could use many, smaller telescopes over a large baseline to have the same effect. Now that the resolution simply depends on the baseline (the length of the array of telescopes), we can have radio interferometers that span many kilometers.
 
-This is the technique we are trying to show in our experiment, and how it results in far better data then if you simply have one telescope. 
+This is the technique we are trying to show in our experiment, and how it results in far better data then if you simply have one telescope. In our experiment we want to get the angular diameter of the Sun through interferometric techniques, while comparing the single dish angular profile of the Sun to that of a geosynchronous satellite. 
 
 \section{Observations}
 We first took our data on October 19th 2016 using the Stony Brook University Radio Telescope. This telescope was specifically designed and built by Professor Jin Koda as a cheap, simple alternative for those wanting to conduct amateur radio observations. It consists of a single 1 meter diameter satellite dish attached to an azimuthal and altitude drive. Placed below this dish is a long ladder, on which we place the two flat mirrors on both sides of the dish in interferometric mode. Also directly behind the dish are receiver mirrors that reflect the incoming radio waves into the feed horn of the satellite. When we are in single dish mode, we can simply remove since they are not needed. An image of this setup is shown below:
 \begin{figure}[hbt!]
 	\centering
 	\includegraphics[scale = .45]{tourels.jpg}
-	\caption{Diagram of the Stony Brook Radio Telescope in interferometry mode}
+	\caption{Diagram of the Stony Brook Radio Telescope in interferometry mode \cite{2016AmJPh..84..249K}}
 	\label{fig: refcurve1}
 \end{figure}
 
 We choose to put the telescope just outside the Physics building on Stony Brook University's West Campus, because it was a good place where the Sun would be visible for most of the day. The weather that day was mostly cloudy, with there being times we could not even find the Sun. Once we set up and put together the telescope, we began to calibrate the pointing of it in both single dish and interferometry mode. This was done by adjusting the azimuthal and altitude angles of the telescope such that we were just pointing next to the Sun. We then took an azimuthal scan of the Sun and noticed how many volts we were getting on the voltmeter. Depending on the mode we were in, we were supposed to see a specific pattern as a we scanned across the Sun. If we didn't get the expected result we went inside the voltmeter as switched out the attenuator for another one. We continued this until we got expected pattern, and therefore calibrated the telescope. 
 
-Now we were able to start collecting our science data. For each time we scanned across an object, we made sure to right down the current time, the azimuth and altitude of the object, and start end azimuthal angles we scanned across. Also, we made sure to keep the slew rate of the dish as constant throughout the experiment. We started by taking data in single dish mode, taking two scans of the Sun. Next we choose a reference geosynchronous satellite that was far in position from the Sun. It took a while until we found a suitable one, but we eventually found one and took a scan of it two times. Now we switched the telescope into interferometry mode by flipping the dish around and placing all the mirrors back on the ladder. We choose to scan across the Sun in this mode five separate times, once for each different, $B$, baseline. The baseline could be read off by the ruler attached to the ladder. After scanning the Sun in all the baselines, we went back to our reference satellite and took scans of it for the same baselines used for the Sun.  
+Now we were able to start collecting our science data. For each time we scanned across an object, we made sure to right down the current time, the azimuth and altitude of the object, and start end azimuthal angles we scanned across. Also, we made sure to keep the slew rate of the dish as constant throughout the experiment. We started by taking data in single dish mode, taking two scans of the Sun. Next we choose a reference geosynchronous satellite that was far in position from the Sun. It took a while until we found a suitable one, but we eventually found one and took a scan of it two times. Now we switched the telescope into interferometry mode by flipping the dish around and placing all the mirrors back on the ladder. We choose to scan across the Sun in this mode five separate times, once for each different, $B$, baseline. The baseline could be read off by the ruler attached to the ladder. After scanning the Sun in all the baselines, we went back to our reference satellite and took scans of it for the same baselines used for the Sun. The following is a table of our experimental log sheet: 
 
 \section{Data Reduction}
 The data we recorded was taken from a laptop in the form of .CMBL files. These file types are used to view data in Logger Pro, however we are more interested in .CSV files. This file type basically separates data in columns spaced by columns. We converted all our data into this file type by using an online converter. The computer recorded our data as voltage with respect to time, so we are going to have to convert the time to azimuthal angle. This can be done by knowing the azimuthal angles in the beginning and end of the scans. And since we have a constant slew rate, we therefore can deduce the angle at each recorded time.
@@ -132,7 +132,7 @@ Where $P_{max}$ and $P_{min}$ represents the maximum amplitude fringe and succes
 \begin{figure}[hbt!]
 	\centering
 	\includegraphics[scale = .45]{aaaa.jpg}
-	\caption{This plot is taken from Professor Jin Koda's Journal article on this radio telescope}
+	\caption{This plot is taken from Professor Jin Koda's Journal article on this radio telescope \cite{2016AmJPh..84..249K}}
 	\label{fig: refcurve1}
 \end{figure}
 The independent variable $B_{\lambda}$ represents the baseline expressed in multiples of the radio wavelength. In our case, the radio wavelength we used was around 2.6 cm.. We can get this variable directly from our measurements from looking directly at our fringe profile for the satellite. Based on the angular length of a fringe pattern, we can directly get the baseline in multiples of wavelength. This is shown below:
@@ -143,28 +143,29 @@ Where $\delta\lambda$ is taken from the plot:
 \begin{figure}[hbt!]
 	\centering
 	\includegraphics[scale = .45]{assssssssssssss.jpg}
-	\caption{This is also taken from Professor Jin Koda's Journal article.}
+	\caption{This is also taken from Professor Jin Koda's Journal article \cite{2016AmJPh..84..249K}.}
 	\label{fig: refcurve1}
 \end{figure}
-Once we have the visibility for each baseline, we can plot them against each other. From this plot we can deduce the diameter of the Sun through curve fitting.
+Once we have the visibility for each baseline, we can plot them against each other. From this plot we can deduce the diameter of the Sun through curve fitting. Our baselines ranged from 60 inches to 120 inches
 
 The single dish data is a lot easier to analyze. All we need to do is to convert the time to azimuthal angle by the method stated before. We can plot the Sun and satellite data on the same curve to compare the angular profiles.
+The reduced plots of our single dish and interferometric data are shown in Figures 4 and 5.
 
-Unfortunately, we were unable to obtain any data we could reduce to get valuable data. Figures of our analyzed data in both modes can be seen in Figures 4 and 5.
+
 \begin{figure}[hbt!]
 	\centering
-	\includegraphics[scale = .45]{qqq.png}
+	\includegraphics[scale = .45]{krennic.png}
 	\caption{Plot of our Sun is the blue dashed line, while the satellite is in the red dots.}
 	\label{fig: refcurve1}
 \end{figure}
 \begin{figure}[hbt!]
 	\centering
-	\includegraphics[scale = .45]{figure_1.png}
+	\includegraphics[scale = .45]{jyn.png}
 	\caption{Plot of our reduced interferometry mode data}
 	\label{fig: refcurve1}
 \end{figure}
 
-As you can see, we can't obtain any reasonable results from this. It appears that when we took the single dish data for the satellite, we actually scanned across two satellites. The visibility vs. baseline plot does not resemble a sinc function by any means as well. So as a result, we decided to use the data taken by another lab group. Analyzing their data using the same methods stated earlier, we get the following figures:
+
 \section{Data Analysis and Results}
 Now that we have the plot of visibility vs. baseline, we can fit the plot to a sinc curve and get the diameter from the parameters. In theory, this plot should resemble a sinc function given by:
 \begin{equation}
@@ -174,17 +175,38 @@ Assuming the Sun to be a one dimensional disk, we can get the relation:
 \begin{equation}
 V_{0}(B_{\lambda}) = \frac{\sin(\pi B_{\lambda} \alpha)}{\pi B_{\lambda}}
 \end{equation}
-So if we fit the points to a sinc function, the parameter $\alpha$ should give us the angular diameter of the Sun
+So if we fit the points to a sinc function, the parameter $\alpha$ should give us the angular diameter of the Sun. Looking at our plot, it clearly does not seem to resemble or adequately fit a sinc function. However, we can still get a good estimate for the angular diameter of the Sun. This can be done by noticing at which baseline $B_{\lambda}$ is the visibility closest to zero. Evidently the only point that is closest to zero is at the baseline of 80.0 inches $\pm$ 0.1 inch . Using equation (2), we can get the angular diameter of the Sun:
+
+\begin{equation}
+	\delta\theta = \frac{2.6 \; \textit{cm}}{203.2 \; \textit{cm}} = 0.12795
+\end{equation}
+The only error in this result is in the baseline measurement, so the error should be:
+\begin{equation}
+      \sigma_{\delta\theta} = \delta\theta  \frac{\sigma_{B}}{B}
+\end{equation}
+Plugging in the values, we get an error of $1.6 * 10^{-5}$ radians. Converting the result to arcminutes, we get an angular diameter of 43.99' $\pm$ 0.06'. 
+
+Clearly from looking at the single dish data plot, there is something wrong here. It seems that when we were taking our satellite scans, we were actually viewing two satellites at once. Therefore, it is difficult to evaluate the data at all. In theory the Sun should be resolved compared to the satellite. However in our case there is not any way to determine this. 
+
 \section{Discussion}
+Now that we have the experimental angular diameter of the Sun, we can compare our result with the literature value. The angular diameter of the Sun varies depending on the time of the year since we are in an elliptical orbit. So we calculated the Earth-Sun distance on our observation date to be 1.00837 AU. Converting the Sun's diameter to AU, 0.00929826069 AU, we can now get the angular diameter of the Sun using the following equation:
+\begin{equation}
+	\delta = 2 \arctan\left( \frac{d}{2D}\right) 
+\end{equation}
+Where $d$ and $D$ are the Sun diameter and the Earth-Sun distance respectively. Plugging in the numbers and converting to arcminutes, we get a value of 31.7'. Comparing this value to the experimental, they do not agree within error. They disagree by about 12', or about 0.2 degrees. 
 
-\section{Conclusion }
+There are many explanations for this discrepancy. First off, throughout the entire experiment the voltmeter we were using was always acting strange. When we pointed the telescope at nothing it would read off maximum voltage, whereas if we pointed directly at the Sun we would get no reading. So we constantly kept switching out attenuators in the voltmeter to try to get some sort of signal from the Sun. Also it did not help that the clouds were really thick, such that we could not even find the shadow of the Sun for quite a while. Eventually we actually found our the voltmeter we were using was defective, which is a good reason why we can't fit our visibility curve to a sinc function (i.e. why our interferometric data is so off). If we had another chance at the experiment with a functioning voltmeter I believe we would be able to yield more accurate data.
 
+Another explanation is that we did not have the telescope itself lined up correctly. This was constantly a problem we were having when taking data. We thought we had the dish lined up with the Sun by looking at the shadows, but most of the time we failed to line up properly. And when we did do it correct it would fall out of alignment quite quickly. I think that this problem could be erased if we had more practice with the instrument itself. The telescope is very finicky and particular, so you must really spend some time with it to get a good idea how it functions.
 
+\section{Conclusion}
+Over the past hundred years or so we have grown to take over the radio spectrum in all wavelengths. Whether its for AM FM radio, cellular phones, television, GPS, satellites or even your home built radio telescope, we really have grasped the power of this part of the electromagnetic spectrum. 
+
+In our experiment specifically we went out with the goal of measuring the angular diameter of the Sun using interferometric techniques. Also we wanted to use a classic single dish telescope to compare the profiles of the Sun and a geosynchronous satellite. Despite some technical and human error during the experiment, we managed to get some results. We measured the angular diameter of the Sun to be 43.99' $\pm$ 0.06'. Compared to the literature value on our observation data, 31.7', they do not agree within error. In our opinion this is mainly due to the faulty voltmeter we had during our experiment, which didn't allow us to get good interferometric data. As for the single dish results, our data is not adequate enough to get anything from it. We mistakenly took scans of two reference satellites throughout the entire experiment, which in the end made us incapable of deducing any results from our single dish data. 
 
 \begin{thebibliography}{9}	
-	
+\bibitem[Koda et al.(2016)]{2016AmJPh..84..249K} Koda, J., Barrett, J., Shafto, G., et al.\ 2016, American Journal of Physics, 84, 249 
 \end{thebibliography}
 
-\appendix
 
 \end{document}
